@@ -1,0 +1,17 @@
+<resources>
+
+    <string name="title_activity_login">Přihlaš se</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">E-mail</string>
+    <string name="prompt_password">Heslo</string>
+    <string name="action_sign_in_register">Odeslat</string>
+    <string name="action_sign_in_short">Přihlásit/registrovat</string>
+    <string name="action_forgot_password">Recover lost password</string>
+    <string name="login_progress_signing_in">Přihlašuji&#8230;</string>
+    <string name="error_invalid_email">Neplatný e-mail</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">Chybné heslo</string>
+    <string name="error_field_required">Povinné pole</string>
+
+</resources>
