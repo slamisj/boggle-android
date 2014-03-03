@@ -9,6 +9,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -43,11 +44,13 @@ public class LoginActivity extends Activity {
 	private View mLoginFormView;
 	private View mLoginStatusView;
 	private TextView mLoginStatusMessageView;
+	public Activity activity;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		this.activity = this;
+		// show it
 		setContentView(R.layout.activity_login);
 
 		// Set up the login form.
@@ -186,9 +189,9 @@ public class LoginActivity extends Activity {
 	 * Represents an asynchronous login/registration task used to authenticate
 	 * the user.
 	 */
-	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+	public class UserLoginTask extends AsyncTask<Void, Void, String> {
 		@Override
-		protected Boolean doInBackground(Void... params) {
+		protected String doInBackground(Void... params) {
 			// Simulate network access.
 			String secret = "";
 			String authData = "";
@@ -197,33 +200,40 @@ public class LoginActivity extends Activity {
 			MyHttpClient httpClient = new MyHttpClient(Settings.AUTH_URL + authData, getApplicationContext());
 			String response = httpClient.getResponse();
 			JSONObject jObject;
+			Log.d(Settings.DEBUG_TAG, "test:");
 			try {
 				jObject = new JSONObject(response);
 				secret = jObject.getString("secret");
-			} catch (JSONException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
+				Log.d(Settings.DEBUG_TAG, "error:");
+				return "ERR";
 			}
 			
 			Log.d(Settings.DEBUG_TAG, "response:" + secret);
 			
-			if (secret.equals(Settings.NO_USER)) {
-				return false;
+			if (secret.equals(Settings.NO_USER) || secret.equals("")) {
+				return "N";
 			} else {
 				SharedPreferences sharedPref = getSharedPreferences(Settings.PREFS_FILE, Context.MODE_PRIVATE);
 				SharedPreferences.Editor editor = sharedPref.edit();
 				editor.putString("SECRET", secret);
 				editor.commit();
-				return true;
+				return "Y";
 			}
 		}
 
 		@Override
-		protected void onPostExecute(final Boolean success) {
+		protected void onPostExecute(final String success) {
 			mAuthTask = null;
 			showProgress(false);
 
-			if (success) {
+			if (success == "Y") {
 				finish();
+			} else if (success == "ERR") {
+				AlertDialog alertDialog = Alert.CreateAlertDialog(activity);
+				// show it
+				alertDialog.show();
 			} else {
 				mPasswordView
 						.setError(getString(R.string.error_incorrect_password));

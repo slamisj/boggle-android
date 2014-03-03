@@ -1,20 +1,68 @@
 
 package com.boggle.boggle;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
 
 public class MainActivity extends Activity {
-
+	Activity activity;
+	
+	private class GetGameString extends AsyncTask<Void, Void, String> {
+		@Override
+		protected String doInBackground(Void... params) {
+			MyHttpClient httpClient = new MyHttpClient(Settings.GET_GS_URL, getApplicationContext());
+			return httpClient.getResponse();
+		}
+		
+	    protected void onPostExecute(String contentAsString) {
+	    	int idGameUser = 0;
+	    	boolean isError = false;
+	    	String upperGameString;
+	    	String gameString = "";
+	    	JSONObject jObject;
+			try {
+				if (contentAsString == null) {
+					isError = true;
+					/*gameString = getLocalGs();
+					idGameUser = 0;*/
+				} else {
+					jObject = new JSONObject(contentAsString);
+					idGameUser = jObject.getInt("idGameUser");
+		            gameString = jObject.getString("gameString");
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+				isError = true;
+			}
+			if (isError) {
+				AlertDialog alertDialog = Alert.CreateAlertDialog(activity);
+				// show it
+				alertDialog.show();
+				return;
+			}
+            
+            Intent intent = new Intent(activity, PlayActivity.class);
+            intent.putExtra("idGameUser", idGameUser);
+        	intent.putExtra("gameString", gameString);
+        	startActivity(intent);
+            
+	    }
+	}
 	public void play(View view) {
-	    Intent intent = new Intent(this, PlayActivity.class);
-	    startActivity(intent);
+		GetGameString getGsAsyncTask = new GetGameString();
+		getGsAsyncTask.execute();
 	}
 	
 	public void rules(View view) {
@@ -23,7 +71,7 @@ public class MainActivity extends Activity {
 	}
 	
 	public void logout(View view) {
-		SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+		SharedPreferences sharedPref = getSharedPreferences(Settings.PREFS_FILE, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = sharedPref.edit();
 		editor.putString("SECRET", Settings.NO_USER);
 		editor.commit();
@@ -48,6 +96,7 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.d(Settings.DEBUG_TAG, "Create...");
 		super.onCreate(savedInstanceState);
+		this.activity = this;
 		setContentView(R.layout.activity_main);
 		this.checkLogin();
 	}

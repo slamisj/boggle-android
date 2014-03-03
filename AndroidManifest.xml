@@ -19,7 +19,8 @@
         <activity
             android:name="com.boggle.boggle.MainActivity"
             android:label="@string/app_name"
-            android:launchMode="singleTask" >
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,20 +31,25 @@
             android:name="com.boggle.boggle.PlayActivity"
             android:label="@string/title_activity_play"
             android:launchMode="singleTask"
-            android:noHistory="true" >
+            android:noHistory="true"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.boggle.boggle.ResultActivity"
-            android:label="@string/title_activity_result" >
+            android:label="@string/title_activity_result"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.boggle.boggle.LoginActivity"
             android:label="@string/title_activity_login"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize|stateVisible" 
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name="com.boggle.boggle.RulesActivity"
-            android:label="@string/title_activity_rules" >
+            android:label="@string/title_activity_rules" 
+            android:screenOrientation="portrait" >
         </activity>
     </application>
 

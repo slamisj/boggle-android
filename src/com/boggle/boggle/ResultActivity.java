@@ -1,29 +1,18 @@
 package com.boggle.boggle;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.os.AsyncTask;
-import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.webkit.WebView;
-import android.widget.Button;
-import android.widget.TextView;
 
 public class ResultActivity extends Activity {
 
@@ -60,20 +49,7 @@ public class ResultActivity extends Activity {
 		Log.d(Settings.DEBUG_TAG, "New intent...");
 	    int idGameUser = intent.getIntExtra("idGameUser", 0);
 	    if (idGameUser == 0) {//offline
-    		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-			// set title
-			alertDialogBuilder.setTitle("Offline");
-			// set dialog message
-			alertDialogBuilder
-				.setMessage("Offline!")
-				.setCancelable(false)
-				.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int id) {
-						dialog.cancel();
-					}
-				  });
-			// create alert dialog
-			AlertDialog alertDialog = alertDialogBuilder.create();
+	    	AlertDialog alertDialog = Alert.CreateAlertDialog(this);
 			// show it
 			alertDialog.show();
     	} else {

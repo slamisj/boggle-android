@@ -41,6 +41,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class PlayActivity extends Activity {
+	Activity activity;
 	int idGameUser;
 	String gameString = "";
 	Counter counter;
@@ -112,52 +113,7 @@ public class PlayActivity extends Activity {
     	this.runResult();
 	}
     
-    protected void onStart() {
-		Log.d(Settings.DEBUG_TAG, "Start...");
-		super.onStart();
-		GetGameString getGsAsyncTask = new GetGameString();
-		getGsAsyncTask.execute();
-	    this.colorButtons();
-        this.counter = new Counter();
-        this.counter.execute();
-	}
-
-	private class GetGameString extends AsyncTask<Void, Void, String> {
-		@Override
-		protected String doInBackground(Void... params) {
-			MyHttpClient httpClient = new MyHttpClient(Settings.GET_GS_URL, getApplicationContext());
-			return httpClient.getResponse();
-		}
 		
-	    protected void onPostExecute(String contentAsString) {
-	    	char currentChar;
-	    	String upperGameString;
-	    	JSONObject jObject;
-			try {
-				if (contentAsString == null) {
-					gameString = getLocalGs();
-					idGameUser = 0;
-				} else {
-					jObject = new JSONObject(contentAsString);
-					idGameUser = jObject.getInt("idGameUser");
-		            gameString = jObject.getString("gameString");
-				}
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-            upperGameString = gameString.toUpperCase();
-            
-			for (int i = 1; i <= 16; i++) {
-				int resID = getResources().getIdentifier("button" + i,
-					    "id", getPackageName());
-				Button button = (Button) findViewById(resID);
-				currentChar = upperGameString.charAt(i - 1);
-				button.setText(Character.toString(currentChar).equals("#") 
-							? "CH" 
-							: Character.toString(currentChar));
-			}
-	    }
-	}
 	
 	private class Counter extends AsyncTask<Void, Void, Void> {
 		@Override
@@ -185,9 +141,31 @@ public class PlayActivity extends Activity {
 	}
 	
 	protected void onCreate(Bundle savedInstanceState) {
+		Intent intent = this.getIntent();
+		String upperGameString = "";
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_play);
+		this.activity = this;
 		Log.d(Settings.DEBUG_TAG, "Create...");	
+
+    	char currentChar;
+        super.onNewIntent(intent);
+        idGameUser = intent.getIntExtra("idGameUser", 0);
+        gameString = intent.getStringExtra("gameString");
+        Log.d(Settings.DEBUG_TAG, "Start...");
+	    this.colorButtons();
+	    upperGameString = gameString.toUpperCase();
+		for (int i = 1; i <= 16; i++) {
+			int resID = getResources().getIdentifier("button" + i,
+				    "id", getPackageName());
+			Button button = (Button) findViewById(resID);
+			currentChar = upperGameString.charAt(i - 1);
+			button.setText(Character.toString(currentChar).equals("#") 
+						? "CH" 
+						: Character.toString(currentChar));
+		}
+        this.counter = new Counter();
+        this.counter.execute(); 
 	}
 	
 	protected void onStop() {
@@ -196,6 +174,12 @@ public class PlayActivity extends Activity {
 		//this.countdown.sendStop();
 	}
 
+	protected void onPause(){
+	    super.onPause();
+	    this.counter.cancel(true);
+    	this.runResult();
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
