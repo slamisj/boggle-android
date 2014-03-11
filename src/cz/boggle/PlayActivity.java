@@ -235,10 +235,14 @@ public class PlayActivity extends Activity {
 	
 	/** Called when the user adds diacritics */
 	public void addDia(View view) {
-		TextView text = (TextView) findViewById(R.id.current_word);
-		String curVal = text.getText().toString(); 
-		text.setText(curVal.substring(0, curVal.length() - 1));
-		this.addLetterCommon(view);
+		Button pressedButton = (Button) view;
+	    String addedLetter = pressedButton.getText().toString();
+	    if (addedLetter.length() > 0) {
+			TextView text = (TextView) findViewById(R.id.current_word);
+			String curVal = text.getText().toString(); 
+			text.setText(curVal.substring(0, curVal.length() - 1));
+			this.addLetterCommon(view);
+	    }
 	}
 	
 	public void clearButtons() {
